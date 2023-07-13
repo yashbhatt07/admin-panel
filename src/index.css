@@ -2,17 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 * {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  scroll-behavior: smooth;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 body {
-  font-family:
-    Times New Roman,
-    Times,
-    serif;
+    font-family: 'Poppins', sans-serif;
 }
