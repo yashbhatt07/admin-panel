@@ -1,55 +1,52 @@
-import React, { useState } from 'react'
-import './Login.css'
-
+import { useState, useEffect } from 'react'
 import { Form, Button } from 'react-bootstrap'
-import * as yup from 'yup'
+
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import Logo from '../../assets/logo.png'
 import { useNavigate } from 'react-router'
-import { login } from '../../API/Users'
-import ToastMessage from '../ToastMessage/ToastMessage'
+import Logo from '../../assets/logo.png'
+// import ToastMessage from '../ToastMessage/ToastMessage'
 // import SuccessMessage from '../ToastMessage/SuccessMessage'
-const Login = () => {
 
+import { LoginSchema } from '../../Schemas'
+import { login } from '../../API/Users'
+
+import './Login.css'
+import _ from 'lodash'
+
+const Login = () => {
     const navigate = useNavigate()
     const [error, setError] = useState('')
 
-    const schema = yup.object().shape({
-        email: yup.string().email('Invalid email').required('Email is required'),
-        password: yup
-            .string()
-            .required('Passwork is required')
-            .min(8, 'Password must be at least 8 characters')
-            .max(12, 'Password must be less then 12 characters'),
-    })
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm({
         mode: 'onChange',
-        resolver: yupResolver(schema),
+        resolver: yupResolver(LoginSchema),
     })
 
     const goToSignUpForm = () => {
         navigate('/signup')
     }
+
+    useEffect(() => {
+        localStorage.removeItem('login')
+    }, [])
+
     const submit = async (data, event) => {
-        console.log('🚀 ~ file: Login.jsx:38 ~ submit ~ data:', data)
         event.preventDefault()
-        schema.validate(data)
+        LoginSchema.validate(data)
+
         const onLogin = await login(data)
-        console.log('🚀 ~ file: Login.jsx:42 ~ submit ~ onLogin:', onLogin)
 
-        if (onLogin && onLogin.length > 0) {
-        console.log("🚀 ~ file: Login.jsx:46 ~ submit ~ onLogin:", onLogin)
+        if (onLogin && !_.isEmpty(onLogin)) {
+            if (onLogin.role === 'superadmin') {
+                localStorage.setItem('login', true)
 
-            if(onLogin[0].role === "superadmin") {
-               return  navigate("/user-verification-portal")
+                return navigate('/user-verification-portal')
             }
-          
-            
         } else {
             setError('Wrong Credential')
         }
@@ -57,8 +54,6 @@ const Login = () => {
 
     return (
         <>
-        {/* <SuccessMessage/> */}
-        <ToastMessage/>
             <div style={{ background: '#111', height: '100vh' }} className="main-l">
                 <img src={Logo} alt="logo" width={150} height={150} />
                 <Form style={{ margin: 'auto 0', marginLeft: '400px' }} onSubmit={handleSubmit(submit)}>

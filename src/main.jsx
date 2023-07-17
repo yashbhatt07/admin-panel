@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 
 import Routes from './routes'
-
+import ToastMessage from './Pages/ToastMessage/ToastMessage'
 import './index.css'
 import axios from 'axios'
 
@@ -13,6 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     // <React.StrictMode>
     <BrowserRouter>
         <Routes />
+        <ToastMessage />
     </BrowserRouter>
     // </React.StrictMode>,
 )

@@ -8,13 +8,9 @@ function ProtectedRouter({ Component }) {
         if (!login) {
             navigate('/login')
         }
-    })
+    }, [])
 
-    return (
-        <div>
-            <Component />
-        </div>
-    )
+    return <Component />
 }
 
 export default ProtectedRouter

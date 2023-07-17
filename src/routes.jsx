@@ -10,14 +10,19 @@ import UserVerificationPortal from './Pages/user-verification-portal/User-Verifi
 const App = () => {
     return (
         <Routes>
-            <Route exact path="/" element={<Login />} errorElement={<ErrorPage />} />
+            <Route exact path="/" element={<ProtectedRouter Component={Login} />} errorElement={<ErrorPage />} />
 
-            <Route exact path="/signup" element={<SignUp />} errorElement={<ErrorPage />} />
-            <Route exact path="/login" element={<Login />} errorElement={<ErrorPage />} />
+            <Route exact path="/signup" element={<ProtectedRouter Component={SignUp} />} errorElement={<ErrorPage />} />
+            <Route exact path="/login" element={<ProtectedRouter Component={Login} />} errorElement={<ErrorPage />} />
 
             {/*  user-verification-portal */}
-            <Route exact path="*" element={<NotFound />} errorElement={<ErrorPage />} />
-            <Route exact path="/user-verification-portal/" element={<UserVerificationPortal />} errorElement={<ErrorPage />} />
+            <Route exact path="*" element={<ProtectedRouter Component={NotFound} />} errorElement={<ErrorPage />} />
+            <Route
+                exact
+                path="/user-verification-portal/"
+                element={<ProtectedRouter Component={UserVerificationPortal} />}
+                errorElement={<ErrorPage />}
+            />
 
             {/* <PrivateRoute path="/private" element={<Private />} /> */}
         </Routes>
