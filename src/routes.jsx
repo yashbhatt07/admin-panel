@@ -1,24 +1,32 @@
-import React from "react";
-import Login from "./Pages/Login/Login";
-import SignUp from "./Pages/SignUp/SignUp";
-import ErrorPage from "./error-page";
-import { Route, Routes } from "react-router";
-import NotFound from "./Pages/NotFound/NotFound";
-import Dashboard from "./Pages/Dashboard/Dashboard";
+import React from 'react'
+import Login from './Pages/Login/Login'
+import SignUp from './Pages/SignUp/SignUp'
+import ProtectedRouter from './Pages/ProtectedRouter/ProtectedRouter'
+import ErrorPage from './error-page'
+import { Route, Routes } from 'react-router'
+import NotFound from './Pages/NotFound/NotFound'
+import UserVerificationPortal from './Pages/user-verification-portal/User-Verification-Portal'
 
 const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Login />} errorElement={<ErrorPage />} />
-      <Route path="/signup" element={<SignUp />} errorElement={<ErrorPage />} />
-      <Route path="/login" element={<Login />} errorElement={<ErrorPage />} />
-      {/*  user-verification-portal */}
-      <Route path="/*" element={<NotFound />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+    return (
+        <Routes>
+            <Route exact path="/" element={<ProtectedRouter Component={Login} />} errorElement={<ErrorPage />} />
 
-      {/* <PrivateRoute path="/private" element={<Private />} /> */}
-    </Routes>
-  );
-};
+            <Route exact path="/signup" element={<ProtectedRouter Component={SignUp} />} errorElement={<ErrorPage />} />
+            <Route exact path="/login" element={<ProtectedRouter Component={Login} />} errorElement={<ErrorPage />} />
 
-export default App;
+            {/*  user-verification-portal */}
+            <Route exact path="*" element={<ProtectedRouter Component={NotFound} />} errorElement={<ErrorPage />} />
+            <Route
+                exact
+                path="/user-verification-portal/"
+                element={<ProtectedRouter Component={UserVerificationPortal} />}
+                errorElement={<ErrorPage />}
+            />
+
+            {/* <PrivateRoute path="/private" element={<Private />} /> */}
+        </Routes>
+    )
+}
+
+export default App
