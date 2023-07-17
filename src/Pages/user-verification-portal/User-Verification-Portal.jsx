@@ -1,19 +1,13 @@
 import { useEffect, useState, useMemo } from 'react'
 import moment from 'moment'
 import axios from 'axios'
-import { Table } from 'react-bootstrap'
+// import { Table } from 'react-bootstrap'
 import { Button, Modal } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-    getPaginationRowModel,
-} from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
 import '../user-verification-portal/User-Verification-Portel.css'
 import { getAllUser } from '../../API/Users'
-
+import TablePagination from '../../Components/ReactTable/Pagination/Table-Pagination'
 function UserVerificationPortal() {
     const navigate = useNavigate()
     const columnHelper = createColumnHelper()
@@ -96,7 +90,7 @@ function UserVerificationPortal() {
                                 <Modal.Body>Want to change isVerified status?</Modal.Body>
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>
-                                        Cancle
+                                        Cancel
                                     </Button>
                                     <Button
                                         variant="primary"
@@ -154,7 +148,7 @@ function UserVerificationPortal() {
                                 <Modal.Body>Want to change isDeleted status?</Modal.Body>
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>
-                                        Cancle
+                                        Cancel
                                     </Button>
                                     <Button variant="primary" onClick={() => handleToggle(!row.row.original.isDeleted)}>
                                         Yes
@@ -185,13 +179,6 @@ function UserVerificationPortal() {
         getUsers()
     }, [])
 
-    const totelUsers = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-    })
-
     const logOut = () => {
         navigate('/login')
     }
@@ -211,95 +198,7 @@ function UserVerificationPortal() {
                     LogOut
                 </Button>
             </div>
-            <div className="container">
-                <Table striped bordered hover className="mx-auto overflow-auto">
-                    <thead>
-                        {totelUsers.getHeaderGroups()?.map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers?.map((header) => (
-                                    <th key={header.id} colSpan={header.colSpan}>
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {totelUsers.getRowModel().rows?.map((row) => (
-                            <tr key={row.id}>
-                                {row.getVisibleCells()?.map((cell) => (
-                                    <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </div>
-            <div className="h-2" />
-            <div className="container">
-                <div className="flex items-center gap-2">
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => totelUsers.setPageIndex(0)}
-                        disabled={!totelUsers.getCanPreviousPage()}
-                    >
-                        {'<<'}
-                    </button>
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => totelUsers.previousPage()}
-                        disabled={!totelUsers.getCanPreviousPage()}
-                    >
-                        {'<'}
-                    </button>
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => totelUsers.nextPage()}
-                        disabled={!totelUsers.getCanNextPage()}
-                    >
-                        {'>'}
-                    </button>
-                    <button
-                        className="border rounded p-1"
-                        onClick={() => totelUsers.setPageIndex(totelUsers.getPageCount() - 1)}
-                        disabled={!totelUsers.getCanNextPage()}
-                    >
-                        {'>>'}
-                    </button>
-                    <span className="flex items-center gap-1">
-                        <div>Page</div>
-                        <strong>
-                            {totelUsers.getState().pagination.pageIndex + 1} of {totelUsers.getPageCount()}
-                        </strong>
-                    </span>
-                    <span className="flex items-center gap-1">
-                        | Go to page:
-                        <input
-                            type="number"
-                            defaultValue={totelUsers.getState().pagination.pageIndex + 1}
-                            onChange={(e) => {
-                                const page = e.target.value ? Number(e.target.value) - 1 : 0
-                                totelUsers.setPageIndex(page)
-                            }}
-                            className="border p-1 rounded w-16"
-                        />
-                    </span>
-                    <select
-                        style={{ margin: '0 0 0 10px' }}
-                        value={totelUsers.getState().pagination.pageSize}
-                        onChange={(e) => {
-                            totelUsers.setPageSize(Number(e.target.value))
-                        }}
-                    >
-                        {[10, 20, 30, 40, 50].map((pageSize) => (
-                            <option key={pageSize} value={pageSize}>
-                                Show {pageSize}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>{totelUsers.getRowModel().rows.length} Rows</div>
-            </div>
+            <TablePagination data={data} columns={columns} />
         </>
     )
 }
