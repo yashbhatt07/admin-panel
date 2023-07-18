@@ -1,0 +1,30 @@
+.game-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+}
+.data {
+    display: flex;
+    justify-content: space-between;
+}
+.second-half {
+    margin: 29px 0 0 3px;
+}
+.data button {
+    height: 26px;
+    width: 81px;
+    font-size: 13px;
+    text-align: center;
+    color: white !important;
+}
+.data #btn {
+    color: blue !important;
+    margin: 0 200px 10px 0;
+}
+
+.edit-btn {
+    display: flex;
+    justify-content: end;
+    gap: 12px;
+}

@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 * {
     padding: 0;
     margin: 0;
@@ -11,6 +12,48 @@
     background-repeat: no-repeat;
 }
 body {
-    font-family: 'Poppins', sans-serif;
     width: 100%;
+    font-family: 'PT Sans', sans-serif;
+}
+
+.layout {
+    position: fixed;
+    width: calc(100% - 200px);
+    left: 200px;
+    height: 100vh;
+    overflow: scroll;
+}
+
+.head {
+    text-align: right;
+    padding: 10px 20px;
+    border-bottom: 1px solid #eaeaea;
+    background-color: #fff;
+}
+
+a,
+.sidebar a.active {
+    text-decoration: none;
+}
+
+.layout:not(.head) {
+    background: #f1f1f1;
+}
+
+.head a:hover:not(.active) {
+    text-decoration: underline;
+}
+
+table thead tr th {
+    padding-top: 10px !important;
+}
+
+table tbody tr:hover {
+    box-shadow: 0px 0px 6px 3px #cacaca;
+    transition: 0.3s all;
+    border-radius: 10px;
+}
+
+input:hover {
+    cursor: pointer;
 }

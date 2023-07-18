@@ -18,10 +18,10 @@
       "email": "yashbhatt078@gmail.com",
       "password": "22222222",
       "confirmPassword": "22222222",
-      "isVerified": false,
-      "isDeleted": true,
+      "isVerified": true,
+      "isDeleted": false,
       "createdAt": "July 17th 2023",
-      "updatedAt": "July 17th 2023",
+      "updatedAt": "July 18th 2023",
       "role": "user",
       "id": 2
     },
@@ -32,11 +32,24 @@
       "password": "55555555",
       "confirmPassword": "55555555",
       "isVerified": false,
-      "isDeleted": true,
+      "isDeleted": false,
       "createdAt": "July 17th 2023",
-      "updatedAt": "July 17th 2023",
+      "updatedAt": "July 18th 2023",
       "role": "user",
       "id": 3
+    },
+    {
+      "firstName": "rajvir",
+      "lastName": "jadeja",
+      "email": "rajvir@gmail.com",
+      "password": "77777777",
+      "confirmPassword": "77777777",
+      "isVerified": false,
+      "isDeleted": false,
+      "createdAt": "July 17th 2023",
+      "updatedAt": "July 18th 2023",
+      "role": "user",
+      "id": 4
     }
   ]
 }

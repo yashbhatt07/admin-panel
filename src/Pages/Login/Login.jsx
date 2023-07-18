@@ -5,14 +5,13 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useNavigate } from 'react-router'
 import Logo from '../../assets/logo.png'
-// import ToastMessage from '../ToastMessage/ToastMessage'
-// import SuccessMessage from '../ToastMessage/SuccessMessage'
 
 import { LoginSchema } from '../../Schemas'
 import { login } from '../../API/Users'
 
 import './Login.css'
 import _ from 'lodash'
+import App from '../../Routes/index.routes'
 
 const Login = () => {
     const navigate = useNavigate()
@@ -32,7 +31,7 @@ const Login = () => {
     }
 
     useEffect(() => {
-        localStorage.removeItem('login')
+        localStorage.removeItem('auth')
     }, [])
 
     const submit = async (data, event) => {
@@ -40,13 +39,15 @@ const Login = () => {
         LoginSchema.validate(data)
 
         const onLogin = await login(data)
+        console.log('🚀 ~ file: Login.jsx:44 ~ submit ~ data:', data)
 
         if (onLogin && !_.isEmpty(onLogin)) {
+            localStorage.setItem('auth', true)
+            localStorage.setItem('role', onLogin.role)
             if (onLogin.role === 'superadmin') {
-                localStorage.setItem('login', true)
-
-                return navigate('/user-verification-portal')
+                return navigate('/user-verification-portal', { replace: true })
             }
+            return navigate('/games', { replace: true })
         } else {
             setError('Wrong Credential')
         }
@@ -54,6 +55,7 @@ const Login = () => {
 
     return (
         <>
+            {/* <SideBar /> */}
             <div style={{ background: '#111', height: '100vh' }} className="main-l">
                 <img src={Logo} alt="logo" width={150} height={150} />
                 <Form style={{ margin: 'auto 0', marginLeft: '400px' }} onSubmit={handleSubmit(submit)}>

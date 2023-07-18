@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 
-import Routes from './routes'
+import Routes from './Routes/index.routes'
 import ToastMessage from './Pages/ToastMessage/ToastMessage'
 import './index.css'
 import axios from 'axios'

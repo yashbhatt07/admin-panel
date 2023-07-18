@@ -3,13 +3,32 @@ import moment from 'moment'
 import axios from 'axios'
 // import { Table } from 'react-bootstrap'
 import { Button, Modal } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
-import { createColumnHelper } from '@tanstack/react-table'
+import {
+    createColumnHelper,
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getFacetedRowModel,
+    getFacetedUniqueValues,
+    getFacetedMinMaxValues,
+    getPaginationRowModel,
+    getSortedRowModel,
+    flexRender,
+} from '@tanstack/react-table'
+
 import '../user-verification-portal/User-Verification-Portel.css'
 import { getAllUser } from '../../API/Users'
-import TablePagination from '../../Components/ReactTable/Pagination/Table-Pagination'
+import TablePagination from '../../Components/Pagination/Table-Pagination'
+import Table from '../../Components/Table/Table'
+
+function fuzzyFilter(row, columnId, value, addMeta) {
+    const itemRank = rankItem(row.getValue(columnId), value)
+    addMeta({
+        itemRank,
+    })
+    return itemRank.passed
+}
 function UserVerificationPortal() {
-    const navigate = useNavigate()
     const columnHelper = createColumnHelper()
 
     const [usersData, setUsersData] = useState([])
@@ -42,8 +61,20 @@ function UserVerificationPortal() {
         },
 
         {
+            header: 'CREATED AT',
+            accessorKey: 'createdAt',
+            // cell: (row) => (row.row.original.createdAt !== null ? date : 'hshdbhb '),
+            enableSorting: false,
+        },
+        {
+            header: 'UPDATED AT',
+            accessorKey: 'updatedAt',
+            enableSorting: false,
+        },
+        {
             header: 'IS VERIFIED',
             accessorKey: 'isVerified',
+            enableSorting: false,
             ...columnHelper.accessor((row) => row.isVerified, {
                 id: 'isVerified',
                 cell: (row) => {
@@ -75,7 +106,7 @@ function UserVerificationPortal() {
                         <span>
                             <div className="form-check form-switch">
                                 <input
-                                    className="form-check-input"
+                                    className="form-check-input mx-5"
                                     type="checkbox"
                                     role="switch"
                                     id="flexSwitchCheckDefault"
@@ -108,6 +139,7 @@ function UserVerificationPortal() {
         {
             header: 'IS DELETED',
             accessorKey: 'isDeleted',
+            enableSorting: false,
             ...columnHelper.accessor((row) => row.isDeleted, {
                 id: 'isDeleted',
                 cell: (row) => {
@@ -133,7 +165,7 @@ function UserVerificationPortal() {
                         <span>
                             <div className="form-check form-switch">
                                 <input
-                                    className="form-check-input"
+                                    className="form-check-input mx-5"
                                     type="checkbox"
                                     role="switch"
                                     id="flexSwitchCheckDefault"
@@ -160,15 +192,6 @@ function UserVerificationPortal() {
                 },
             }),
         },
-        {
-            header: 'CREATED AT',
-            accessorKey: 'createdAt',
-            // cell: (row) => (row.row.original.createdAt !== null ? date : 'hshdbhb '),
-        },
-        {
-            header: 'UPDATED AT',
-            accessorKey: 'updatedAt',
-        },
     ]
 
     useEffect(() => {
@@ -178,27 +201,41 @@ function UserVerificationPortal() {
         }
         getUsers()
     }, [])
+    const [sorting, setSorting] = useState([])
+    const [columnFilters, setColumnFilters] = useState([])
+    const [globalFilter, setGlobalFilter] = useState('')
 
-    const logOut = () => {
-        navigate('/login')
-    }
+    const totelUsers = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
+        debugHeaders: true,
+        debugColumns: false,
+        debugTable: true,
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
+        state: {
+            columnFilters,
+            globalFilter,
+            sorting,
+        },
+    })
 
     return (
         <>
-            <div>
-                <h3 className="text-center my-3">
-                    <b>USERS DATA</b>
-                </h3>
-                <Button
-                    type="button"
-                    variant="btn btn-outline-primary"
-                    className=" float-end mb-2 me-4 "
-                    onClick={logOut}
-                >
-                    LogOut
-                </Button>
-            </div>
-            <TablePagination data={data} columns={columns} />
+            <Table totelUsers={totelUsers} data={data} />
+            <TablePagination totelUsers={totelUsers} />
         </>
     )
 }

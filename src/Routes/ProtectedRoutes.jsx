@@ -6,7 +6,7 @@ function ProtectedRouter({ Component }) {
     useEffect(() => {
         let login = localStorage.getItem('auth')
         if (!login) {
-            return navigate('/login')
+            return navigate('/login', { replace: true })
         }
     }, [])
 
