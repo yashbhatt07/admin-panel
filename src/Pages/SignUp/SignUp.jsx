@@ -125,7 +125,7 @@ function SignUp() {
                                 <Form.Label className="text-white">Confirm Password</Form.Label>
                                 <Form.Control
                                     type="password"
-                                    {...register('confirmPassword')}
+                                    // {...register('confirmPassword')}
                                     placeholder="Enter Confirm Password..."
                                     className="p-2"
                                 />

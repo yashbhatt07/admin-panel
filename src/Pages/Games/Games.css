@@ -1,30 +1,53 @@
-.game-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 14px;
-}
-.data {
-    display: flex;
-    justify-content: space-between;
-}
-.second-half {
-    margin: 29px 0 0 3px;
-}
-.data button {
-    height: 26px;
-    width: 81px;
-    font-size: 13px;
-    text-align: center;
-    color: white !important;
-}
-.data #btn {
-    color: blue !important;
-    margin: 0 200px 10px 0;
+.table-css {
+    border: none;
+    border-radius: 70%;
+    /* border: solid !important; */
+    border-collapse: separate;
 }
 
-.edit-btn {
-    display: flex;
-    justify-content: end;
-    gap: 12px;
+table tr:hover {
+    background-color: #ddd;
+}
+
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #f1f1f1;
+    color: rgb(32, 26, 26);
+    padding: 30px;
+    height: 20px;
+}
+
+td:first-child,
+th:first-child {
+    border-radius: 10px 0 0 10px;
+    padding: 2px;
+}
+td:last-child,
+th:last-child {
+    border-radius: 0 10px 10px 0;
+}
+
+table tbody tr td {
+    padding: 10px;
+    background-color: white;
+    text-align: center;
+    width: 300px;
+    font-size: small;
+}
+table thead tr {
+    height: 30px;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0 12px;
+}
+
+table thead tr th {
+    padding-top: 36px !important;
+    padding-bottom: 0;
+    font-size: x-small;
+    text-align: center;
 }

@@ -1,223 +1,318 @@
-import React, { useState } from 'react'
-import { Button, Card, Form, Offcanvas } from 'react-bootstrap'
-import DummyPhoto from '../../assets/DummyProfile.webp'
+// import { Button } from 'bootstrap'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import DummyProfile from '../../assets/DummyProfile.webp'
+import SelectItems from '../../Components/SelectItems/SelectItems'
+import { useForm } from 'react-hook-form'
+
+// import { Icon } from '@iconify/react'
+
 import '../Games/Games.css'
+import {
+    createColumnHelper,
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getFacetedRowModel,
+    getFacetedUniqueValues,
+    getFacetedMinMaxValues,
+    getPaginationRowModel,
+    getSortedRowModel,
+    flexRender,
+} from '@tanstack/react-table'
+import axios from 'axios'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faIndianRupeeSign, faSort } from '@fortawesome/free-solid-svg-icons'
+import ListingPagePagibnation from '../../Components/Pagination/ListingPagePagination'
+function fuzzyFilter(row, columnId, value, addMeta) {
+    const itemRank = rankItem(row.getValue(columnId), value)
+    addMeta({
+        itemRank,
+    })
+    return itemRank.passed
+}
+
+const DefaultFilters1 = [
+    { value: 'Farming', label: 'Farming' },
+    { value: 'Racing', label: 'Racing' },
+    { value: 'WingsTechSolution', label: 'WingsTechSolution' },
+    { value: 'Studio', lable: 'Studio' },
+]
+const DefaultFilters2 = [
+    { value: 'Farming', label: 'Farming' },
+    { value: 'Racing', label: 'Racing' },
+    { value: 'WingsTechSolution', label: 'WingsTechSolution' },
+    { value: 'Studio', lable: 'Studio' },
+]
+const DefaultFilters3 = [
+    { value: 'Farming', label: 'Farming' },
+    { value: 'Racing', label: 'Racing' },
+    { value: 'WingsTechSolution', label: 'WingsTechSolution' },
+    { value: 'Studio', lable: 'Studio' },
+]
 
 const Games = () => {
-    const [show, setShow] = useState(false)
+    const [totelGames, setTotelGames] = useState([])
 
-    const handleClose = () => setShow(false)
-    const handleShow = () => setShow(true)
+    const { control } = useForm({
+        mode: 'onChange',
+    })
+
+    useEffect(() => {
+        const getUsers = async () => {
+            await axios
+                .get('games')
+                .then((resp) => {
+                    setTotelGames(resp.data)
+                })
+                .catch((err) => {
+                    console.log(err)
+                    setTotelGames('')
+                })
+        }
+        getUsers()
+    }, [])
+
+    const data = useMemo(() => totelGames, [totelGames])
+    const columnHelper = createColumnHelper()
+
+    const columns = [
+        columnHelper.accessor((row) => row.profile, {
+            id: 'profile',
+            enableSorting: false,
+            cell: (row) => (
+                <span>
+                    {row.row.original.profile ? (
+                        <img src={row.row.original.profile} width={45} alt="Profile" />
+                    ) : (
+                        <img src={DummyProfile} width={45} alt="Dummy Profile" />
+                    )}
+                </span>
+            ),
+        }),
+        columnHelper.accessor((row) => row.id, {
+            id: 'ID',
+            cell: (row) => <span>#{row.row.original.id || '-'}</span>,
+        }),
+
+        columnHelper.accessor((row) => row.name, {
+            id: 'name',
+            cell: (row) => <span>{row.row.original.name || '-'}</span>,
+        }),
+        columnHelper.accessor((row) => row.genre, {
+            id: 'GENRE',
+            cell: (row) => <span>{row.row.original.genre?.value || '-'}</span>,
+        }),
+        columnHelper.accessor((row) => row.developedBy, {
+            id: 'DEVELOPED BY',
+            cell: (row) => <span>{row.row.original.developedBy?.value || '-'}</span>,
+        }),
+        columnHelper.accessor((row) => row.users, {
+            id: '#USERS',
+            enableSorting: false,
+            cell: () => <span>{Number(Math.floor(Math.random() * 100000)).toLocaleString()}</span>,
+        }),
+        columnHelper.accessor((row) => row.gamePlayes, {
+            id: '#GAMEPlAYES',
+            enableSorting: false,
+            cell: () => <span>{Number(Math.floor(Math.random() * 100000)).toLocaleString()}</span>,
+        }),
+        columnHelper.accessor((row) => row.rewards, {
+            id: 'REWARDS',
+            enableSorting: false,
+            cell: () => (
+                <span>
+                    <FontAwesomeIcon icon={faIndianRupeeSign} />
+                    {Number(Math.floor(Math.random() * 100000)).toLocaleString()}
+                </span>
+            ),
+        }),
+        columnHelper.accessor((row) => row.rewards, {
+            id: 'FEATURED GAME',
+            enableSorting: false,
+            cell: (row) => (
+                <span style={{ color: row.row.original.isFeatured ? 'green' : 'red' }}>
+                    {row.row.original.isFeatured ? 'Yes' : 'No'}
+                </span>
+            ),
+        }),
+
+        columnHelper.accessor((row) => row.priority, {
+            id: 'PRIORITY',
+            enableSorting: false,
+            cell: (row) => <span>{Number(row.row.original.priority).toLocaleString() || 0}</span>,
+        }),
+        columnHelper.accessor((row) => row.status, {
+            id: 'Status',
+            enableSorting: false,
+            cell: (row) => (
+                <div
+                    className="btn-warning btn-sm p-1"
+                    style={{
+                        color: 'white',
+                        fontSize: '11px',
+                        backgroundColor:
+                            row.row.original.status === 'IN DRAFT'
+                                ? '#d9b169fa'
+                                : row.row.original.status === 'ACTIVE'
+                                ? '#4aa74a'
+                                : '#cb5c5c',
+                    }}
+                >
+                    {row.row.original?.status}
+                </div>
+            ),
+        }),
+    ]
+    const [sorting, setSorting] = useState([])
+    const [columnFilters, setColumnFilters] = useState([])
+
+    const gameTable = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnFiltersChange: setColumnFilters,
+        globalFilterFn: fuzzyFilter,
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
+        debugHeaders: true,
+        debugColumns: false,
+        debugTable: true,
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
+        state: {
+            columnFilters,
+            sorting,
+        },
+    })
+    const navigate = useNavigate()
+
+    const goToGames = () => {
+        navigate('new', { relative: true })
+    }
+
+    const editHandler = (id) => {
+        navigate(`edit/${id}`, { relative: true })
+    }
 
     return (
         <>
-            <div className="d-flex justify-content-between ">
-                <div className="text-primary " style={{ fontSize: '10px' }}>
-                    &lt;Game Listing
+            <div className="d-flex gap-2 mb-4">
+                <div>
+                    <h6 style={{ color: 'gray' }}>FILTER BY</h6>
+                    <div className="d-flex gap-2 ">
+                        <SelectItems
+                            style={{
+                                borderRadius: '3%',
+                            }}
+                            control={control}
+                            options={DefaultFilters1}
+                            name="fdjksf"
+                        />
+                        <SelectItems
+                            style={{
+                                borderRadius: '3%',
+                            }}
+                            control={control}
+                            options={DefaultFilters2}
+                            name="gefdfdnre"
+                            isPlaceholder="Game Category"
+                        />
+                        <SelectItems
+                            style={{
+                                borderRadius: '3%',
+                            }}
+                            control={control}
+                            options={DefaultFilters3}
+                            name="genre"
+                            className="px-5"
+                        />
+                    </div>
                 </div>
                 <div>
-                    <span className="text-danger" style={{ fontSize: '12px' }}>
-                        NOT CONNECTED TO GAME SERVER
-                    </span>
-                    <Button variant="success mx-4 " style={{ width: '120px' }}>
-                        Activate
-                    </Button>
+                    <button onClick={goToGames} className="btn btn-primary pb-2 mt-4 " style={{ marginLeft: '430px' }}>
+                        {' '}
+                        + New Game
+                    </button>
                 </div>
             </div>
-            <div className="main ">
-                <div style={{ width: '45%' }} className="first-half ">
-                    <div style={{ fontSize: '12px', gap: '10px' }}>
-                        <div className="data">
-                            <h6>
-                                <b>Game Details </b>
-                            </h6>
-                            <button
-                                type="button"
-                                className="  btn text-primary text-center "
-                                onClick={handleShow}
-                                id="btn"
-                            >
-                                Edit
-                            </button>
-                            <Offcanvas show={show} onHide={handleClose} placement="end">
-                                <Offcanvas.Body>
-                                    <div className="edit">
-                                        <div className="edit-btn">
-                                            <Button className="btn-danger">Close</Button>
-                                            <Button className="btn-success">Save Changes</Button>
-                                        </div>
-                                        <div className="mt-5">
-                                            <span style={{ fontSize: '10px' }}>
-                                                <b>Game Icon</b>
-                                            </span>
-                                            <br />
-                                            <span style={{ fontSize: '9px' }}> {DummyPhoto}</span>
-                                            <br />
-                                            <img src={DummyPhoto} alt="Profile" width={45} />
-                                            <br />
-                                            <button
-                                                style={{ fontSize: '10px' }}
-                                                type="button"
-                                                className="  btn text-primary text-left"
-                                                id="btn"
-                                            >
-                                                Edit
-                                            </button>
-                                        </div>
-                                        <Form
-                                            style={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                            }}
-                                        >
-                                            <Form.Label style={{ fontSize: '12px' }} htmlFor="inputPassword5">
-                                                Name
-                                            </Form.Label>
-                                            <Form.Control
-                                                style={{
-                                                    width: '125px',
-                                                    height: '30px',
-                                                }}
-                                                type="text"
-                                                id="inputPassword5"
-                                                aria-describedby="passwordHelpBlock"
-                                            />
-                                            {/* <br />
-                                            <div>
-                                                <Form.Label style={{ fontSize: '12px' }} htmlFor="inputPassword5">
-                                                    Genre
-                                                </Form.Label>
-                                                <Form.Select aria-label="Default select example">
-                                                    <option value="1">Racing</option>
-                                                </Form.Select>
-                                            </div>
-                                            <br />
-                                            <div>
-                                                <Form.Label style={{ fontSize: '12px' }} htmlFor="inputPassword5">
-                                                    Developed By
-                                                </Form.Label>
-                                                <Form.Select aria-label="Default select example">
-                                                    <option value="1">Indian Gaming Studio</option>
-                                                </Form.Select>
-                                            </div> */}
-                                        </Form>
-                                    </div>
-                                </Offcanvas.Body>
-                            </Offcanvas>
-                        </div>
 
-                        <Card style={{ width: '20rem', height: '19rem' }}>
-                            <Card.Body>
-                                <div className=" game-details">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Card.Title style={{ fontSize: '15px', margin: 'auto 0' }}>
-                                            <b>Game Icon</b>
-                                        </Card.Title>
-                                        <img src={DummyPhoto} alt="Profile" width={45} />
-                                    </div>
-                                    <div className="data">
-                                        <span>ID</span>
-                                        <span>-</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Name</span>
-                                        <span>-</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Genre</span>
-                                        <span>-</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Developed By</span>
-                                        <span>-</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Featured By</span>
-                                        <span>-</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>New Game Priority</span>
-                                        <span>0</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Status</span>
-                                        <Button className="btn-warning btn-sm">Draft</Button>
-                                    </div>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </div>
-                    <div className="second-half">
-                        <h6>
-                            <b>Game Modes</b>
-                        </h6>
-                        <Card style={{ width: '18rem', fontSize: '12px' }}>
-                            <Card.Body>
-                                <div className="game-details">
-                                    <div className="data">
-                                        <span>Free Gameplay</span>
-                                        <span className="text-primary">Activate</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Daily Tournament </span>
-                                        <span className="text-primary">Activate</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Weekly Tournament</span>
-                                        <span className="text-primary">Activate</span>
-                                    </div>
-                                    <div className="data">
-                                        <span>Monthly Tournament</span>
-                                        <span className="text-primary">Activate</span>
-                                    </div>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </div>
-                    <div className="mt-4 mx-2">
-                        <h6>
-                            <b>Game Banners(0)</b>
-                        </h6>
-                        <button className="text-primary " style={{ fontSize: '12px', border: 'none' }}>
-                            +ADD NEW
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <h6>
-                        <b>Game Stats </b>
-                    </h6>
-                    <div className="d-flex text-center" style={{ gap: '12px' }}>
-                        <Card style={{ width: '9rem', height: '5rem' }}>
-                            <Card.Body className="text-center">
-                                <Card.Title>Game Icon</Card.Title>
-                                <Card.Text>-</Card.Text>
-                            </Card.Body>
-                        </Card>
-                        <Card style={{ width: '9rem', height: '5rem' }}>
-                            <Card.Body>
-                                <Card.Title>Game Icon</Card.Title>
-                                <Card.Text>-</Card.Text>
-                            </Card.Body>
-                        </Card>
-                        <Card style={{ width: '9rem', height: '5rem' }}>
-                            <Card.Body>
-                                <Card.Title>Game Icon</Card.Title>
-                                <Card.Text>-</Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </div>
-                    <div className="mt-4 mx-2">
-                        <h6>
-                            {' '}
-                            <b>Gameplay Videos(0)</b>
-                        </h6>
-                        <button className="text-primary " style={{ fontSize: '12px', border: 'none' }}>
-                            +ADD NEW
-                        </button>
-                    </div>
-                </div>
+            <div>
+                <b style={{ fontSize: '20px' }} className="mx-2">
+                    Games({data.length})
+                </b>
             </div>
+
+            <table className=" overflow-auto  table-css mb-5" cellSpacing={0}>
+                <thead>
+                    {gameTable.getHeaderGroups()?.map((headerGroup) => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers?.map((header) => (
+                                <th key={header.id} colSpan={header.colSpan}>
+                                    {header.isPlaceholder ? null : (
+                                        <div
+                                            style={{ display: 'flex', gap: '3' }}
+                                            className={`${
+                                                header.column.getCanSort() ? 'cursor-pointer select-none' : ''
+                                            }`}
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                            {header.column.getCanFilter() ? (
+                                                <div>
+                                                    {/* <Filter column={header.column} reactTable={reactTable} /> */}
+                                                </div>
+                                            ) : null}
+                                            {totelGames.length > 0
+                                                ? {
+                                                      asc: (
+                                                          <>
+                                                              <FontAwesomeIcon
+                                                                  icon={faSort}
+                                                                  style={{ marginTop: '3px' }}
+                                                              />{' '}
+                                                          </>
+                                                      ),
+                                                      desc: (
+                                                          <>
+                                                              <FontAwesomeIcon icon={faSort} />{' '}
+                                                          </>
+                                                      ),
+                                                  }[header.column.getIsSorted() ?? ''] || null
+                                                : ''}
+                                        </div>
+                                    )}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+
+                <tbody>
+                    {totelGames.length > 0 ? (
+                        gameTable.getRowModel().rows?.map((row) => (
+                            <tr key={row.id} onClick={() => editHandler(row.original.id)}>
+                                {row.getVisibleCells()?.map((cell) => (
+                                    <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                                ))}
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={7} className="text-center">
+                                <span style={{ textAlign: 'center' }}>No Data Found</span>
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+            <ListingPagePagibnation gameTable={gameTable} />
         </>
     )
 }

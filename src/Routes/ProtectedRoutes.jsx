@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-function ProtectedRouter({ Component }) {
+function ProtectedRouter({ Component, ...props }) {
     const navigate = useNavigate()
     useEffect(() => {
         let login = localStorage.getItem('auth')
@@ -10,7 +10,7 @@ function ProtectedRouter({ Component }) {
         }
     }, [])
 
-    return <Component />
+    return <Component {...props} />
 }
 
 export default ProtectedRouter

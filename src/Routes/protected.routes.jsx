@@ -7,6 +7,7 @@ import Logout from '../Pages/Logout/Logout'
 import Tournament from '../Pages/Tournament/Tournament'
 import GameDevelopers from '../Pages/Game Developers/GameDevelopers'
 import Games from '../Pages/Games/Games'
+import NewGames from '../Pages/Games/New-Games'
 
 const Protected = () => {
     return (
@@ -18,6 +19,19 @@ const Protected = () => {
                 errorElement={<ErrorPage />}
             />
             <Route exact path="/games" element={<ProtectedRouter Component={Games} />} errorElement={<ErrorPage />} />
+            <Route
+                exact
+                path="/games/new"
+                element={<ProtectedRouter Component={NewGames} type="add" />}
+                errorElement={<ErrorPage />}
+            />
+            <Route
+                exact
+                path="/games/edit/:id"
+                element={<ProtectedRouter Component={NewGames} type="edit" />}
+                errorElement={<ErrorPage />}
+            />
+
             <Route
                 exact
                 path="/tournament"

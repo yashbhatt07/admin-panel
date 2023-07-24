@@ -11,9 +11,65 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+
 body {
+    margin: 0;
     width: 100%;
-    font-family: 'PT Sans', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Centra No1', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+        'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+}
+
+#root * {
+    font-family: 'Centra No1';
+}
+
+@font-face {
+    font-family: 'Centra No1';
+    src: url('./assets/fonts/CentraNo1-Thin.ttf');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Centra No1';
+    src: url('./assets/fonts/CentraNo1-Light.ttf');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Centra No1';
+    src: url('./assets/fonts/CentraNo1-Book.ttf');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Centra No1';
+    src: url('./assets/fonts/CentraNo1-Medium.ttf');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Centra No1';
+    src: url('./assets/fonts/CentraNo1-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Centra No1';
+    src: url('./assets/fonts/CentraNo1-Extrabold.ttf');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
 }
 
 .layout {
@@ -32,16 +88,13 @@ body {
 }
 
 a,
-.sidebar a.active {
+.sidebar a.active,
+a:hover {
     text-decoration: none;
 }
 
 .layout:not(.head) {
     background: #f1f1f1;
-}
-
-.head a:hover:not(.active) {
-    text-decoration: underline;
 }
 
 table thead tr th {
@@ -56,4 +109,8 @@ table tbody tr:hover {
 
 input:hover {
     cursor: pointer;
+}
+
+.select-options {
+    padding: 0 70px;
 }

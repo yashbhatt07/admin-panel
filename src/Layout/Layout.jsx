@@ -9,7 +9,12 @@ const Layout = () => {
             <div className="layout">
                 <div
                     className="head position-fixed"
-                    style={{ width: 'calc(100% - 200px)', borderBottom: '1px solid #cacaca' }}
+                    style={{
+                        width: 'calc(100% - 200px)',
+                        borderBottom: '1px solid #cacaca',
+                        zIndex: '1',
+                        boxShadow: '2px 2px 2px 1px rgba(0, 0, 0, 0.1)',
+                    }}
                 >
                     <Link to="/logout" reloadDocument>
                         Logout

@@ -86,30 +86,3 @@ export const login = async (loginData) => {
             // toaster
         })
 }
-
-// Add a request interceptor
-axios.interceptors.request.use(
-    function (config) {
-        console.log('Request')
-        return config
-    },
-    function (error) {
-        showToast('Something is wrong with the API')
-        return Promise.reject(error)
-    }
-)
-
-// Add a response interceptor
-axios.interceptors.response.use(
-    function (response) {
-        console.log('Response')
-        // showSuccessMessage('Succesefull')
-
-        return response
-    },
-    function (error) {
-        showToast('Something is wrong with the API')
-
-        return Promise.reject(error)
-    }
-)
