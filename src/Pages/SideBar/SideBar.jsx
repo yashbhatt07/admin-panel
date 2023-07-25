@@ -3,9 +3,11 @@ import '../SideBar/SideBar.css'
 import { Nav, Navbar } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 import profilelogo from '../../assets/newphoto.png'
+import { useLocation } from 'react-router-dom'
 
 const SideBar = () => {
     const role = localStorage.getItem('role')
+    const location = useLocation()
 
     return (
         <div className="sidebar bg-black">
@@ -32,7 +34,7 @@ const SideBar = () => {
             ) : (
                 <Nav className="flex-column mt-3">
                     <LinkContainer to="/games">
-                        <Nav.Link>Games</Nav.Link>
+                        <Nav.Link className={location.pathname.startsWith('/games') ? 'selected' : ''}>Games</Nav.Link>
                     </LinkContainer>
                     <LinkContainer to="/tournament">
                         <Nav.Link>Tournament</Nav.Link>

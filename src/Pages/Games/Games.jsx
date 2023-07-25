@@ -22,8 +22,9 @@ import {
 } from '@tanstack/react-table'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faIndianRupeeSign, faSort } from '@fortawesome/free-solid-svg-icons'
+import { faIndianRupeeSign, faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import ListingPagePagibnation from '../../Components/Pagination/ListingPagePagination'
+import { Spinner } from 'react-bootstrap'
 function fuzzyFilter(row, columnId, value, addMeta) {
     const itemRank = rankItem(row.getValue(columnId), value)
     addMeta({
@@ -60,6 +61,7 @@ const Games = () => {
 
     useEffect(() => {
         const getUsers = async () => {
+            setLoading(true)
             await axios
                 .get('games')
                 .then((resp) => {
@@ -69,6 +71,7 @@ const Games = () => {
                     console.log(err)
                     setTotelGames('')
                 })
+            setLoading(false)
         }
         getUsers()
     }, [])
@@ -128,7 +131,9 @@ const Games = () => {
             ),
         }),
         columnHelper.accessor((row) => row.rewards, {
+            header: 'FEATURED GAME',
             id: 'FEATURED GAME',
+
             enableSorting: false,
             cell: (row) => (
                 <span style={{ color: row.row.original.isFeatured ? 'green' : 'red' }}>
@@ -166,6 +171,7 @@ const Games = () => {
     ]
     const [sorting, setSorting] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const gameTable = useReactTable({
         data,
@@ -205,19 +211,21 @@ const Games = () => {
         <>
             <div className="d-flex gap-2 mb-4">
                 <div>
-                    <h6 style={{ color: 'gray' }}>FILTER BY</h6>
+                    <h6 style={{ color: 'gray', fontWeight: '400' }}>FILTER BY</h6>
                     <div className="d-flex gap-2 ">
                         <SelectItems
                             style={{
-                                borderRadius: '3%',
+                                width: '200px',
                             }}
                             control={control}
                             options={DefaultFilters1}
                             name="fdjksf"
+                            searchable={false}
+                            className="fixed-w"
                         />
                         <SelectItems
                             style={{
-                                borderRadius: '3%',
+                                width: '200px',
                             }}
                             control={control}
                             options={DefaultFilters2}
@@ -226,7 +234,7 @@ const Games = () => {
                         />
                         <SelectItems
                             style={{
-                                borderRadius: '3%',
+                                width: '200px',
                             }}
                             control={control}
                             options={DefaultFilters3}
@@ -244,7 +252,7 @@ const Games = () => {
             </div>
 
             <div>
-                <b style={{ fontSize: '20px' }} className="mx-2">
+                <b style={{ fontSize: '20px', fontWeight: '500' }} className="mx-2">
                     Games({data.length})
                 </b>
             </div>
@@ -254,7 +262,12 @@ const Games = () => {
                     {gameTable.getHeaderGroups()?.map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers?.map((header) => (
-                                <th key={header.id} colSpan={header.colSpan}>
+                                <th
+                                    key={header.id}
+                                    colSpan={header.colSpan}
+                                    style={{ fontWeight: '400', fontSize: '10px' }}
+                                    className={header.column.columnDef.headerClassName}
+                                >
                                     {header.isPlaceholder ? null : (
                                         <div
                                             style={{ display: 'flex', gap: '3' }}
@@ -274,17 +287,25 @@ const Games = () => {
                                                       asc: (
                                                           <>
                                                               <FontAwesomeIcon
-                                                                  icon={faSort}
-                                                                  style={{ marginTop: '3px' }}
-                                                              />{' '}
+                                                                  icon={faSortUp}
+                                                                  style={{ marginTop: '3px', marginLeft: '3px' }}
+                                                              />
                                                           </>
                                                       ),
                                                       desc: (
                                                           <>
-                                                              <FontAwesomeIcon icon={faSort} />{' '}
+                                                              <FontAwesomeIcon
+                                                                  icon={faSortDown}
+                                                                  style={{ marginLeft: '3px' }}
+                                                              />
                                                           </>
                                                       ),
-                                                  }[header.column.getIsSorted() ?? ''] || null
+                                                  }[header.column.getIsSorted() ?? ''] || (
+                                                      <FontAwesomeIcon
+                                                          icon={faSort}
+                                                          style={{ marginLeft: '5px', marginTop: '3px' }}
+                                                      />
+                                                  )
                                                 : ''}
                                         </div>
                                     )}
@@ -295,7 +316,13 @@ const Games = () => {
                 </thead>
 
                 <tbody>
-                    {totelGames.length > 0 ? (
+                    {loading ? (
+                        <tr>
+                            <td colSpan={12} className="text-center">
+                                <Spinner />
+                            </td>
+                        </tr>
+                    ) : totelGames.length > 0 ? (
                         gameTable.getRowModel().rows?.map((row) => (
                             <tr key={row.id} onClick={() => editHandler(row.original.id)}>
                                 {row.getVisibleCells()?.map((cell) => (

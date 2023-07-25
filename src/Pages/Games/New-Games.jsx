@@ -45,28 +45,48 @@ const NewGames = ({ type }) => {
     const [showError, setShowError] = useState(false)
     const [showGamePlayError, setShowGamePlayError] = useState(false)
     const [showGameBannerError, setShowGameBannerError] = useState(false)
+    const [showServerBox, setShowServerBox] = useState(false)
+    const [serverStyle, setServerStyle] = useState({ color: 'red', fontSize: '12px' })
+    const [link, setLink] = useState('')
+
+    const linkHandler = (e) => {
+        setLink(e.target.value)
+    }
+    console.log('🚀 ~ file: New-Games.jsx:51 ~ NewGames ~ link:', link)
+
+    const serverConnectedHandler = () => {
+        if (link !== '') {
+            setServerStyle({ color: 'green', fontSize: '12px' })
+            setLink('')
+            errorHandleClose()
+        }
+    }
 
     const handleClose = () => setShow(false)
     const handleShow = () => {
         setShow(true)
     }
-    const errorHandleClose = () => setShowError(false)
+    const errorHandleClose = () => {
+        if (gameData.name === '-' || '') {
+            setShowError(false)
+        } else {
+            setShowServerBox(false)
+        }
+    }
     const errorHandleShow = () => {
         if (gameData.name === '-' || '') {
             setShowError(true)
+        } else {
+            setShowServerBox(true)
         }
     }
     const GameplayErrorClose = () => setShowGamePlayError(false)
     const GameplayErrorShow = () => {
-        if (gameData.name === '-' || '') {
-            setShowGamePlayError(true)
-        }
+        setShowGamePlayError(true)
     }
     const GameBannersErrorClose = () => setShowGameBannerError(false)
     const GameBannersErrorShow = () => {
-        if (gameData.name === '-' || '') {
-            setShowGameBannerError(true)
-        }
+        setShowGameBannerError(true)
     }
 
     const defaultOptions = [
@@ -102,7 +122,7 @@ const NewGames = ({ type }) => {
                     setValue('developedBy', res.data.developedBy)
                     setValue('isFeatured', res.data.isFeatured)
                     setValue('priority', res.data.priority)
-                    setValue('profile', res.data?.profile)
+                    setValue('profile', res.data?.profile || '')
                 })
                 .catch()
         }
@@ -178,7 +198,7 @@ const NewGames = ({ type }) => {
                     <Link to="/games"> &lt;Game Listing</Link>
                 </div>
                 <div>
-                    <span className="text-danger" style={{ fontSize: '12px' }} onClick={errorHandleShow}>
+                    <span style={serverStyle} onClick={errorHandleShow}>
                         NOT CONNECTED TO GAME SERVER
                     </span>
                     <Button
@@ -202,7 +222,7 @@ const NewGames = ({ type }) => {
                     <div className="d-flex">
                         <div style={{ width: '45%' }} className="first-half ">
                             <Details gameData={gameData} handleShow={handleShow} type={type} />
-                            <Modes />
+                            <Modes gameData={gameData} link={link} linkHandler={linkHandler} />
                         </div>
                         <div>
                             <h6>
@@ -231,7 +251,7 @@ const NewGames = ({ type }) => {
                             <div className="mt-4 mx-2">
                                 <h6>
                                     {' '}
-                                    <b>Gameplay Videos(0)</b>
+                                    <b>Gameplay Videos (0)</b>
                                 </h6>
                                 <button
                                     className="text-primary "
@@ -372,38 +392,146 @@ const NewGames = ({ type }) => {
                     </div>
                 </Offcanvas.Body>
             </Offcanvas>
-            <Modal show={showError} onHide={errorHandleClose}>
+            <Modal show={showError} centered onHide={errorHandleClose}>
                 <Modal.Header>
                     <Modal.Title>Error!</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>First create game after you add game link!</Modal.Body>
-                <Modal.Footer>
+                <Modal.Body style={{ fontWeight: '300' }}>First create game after you add game link!</Modal.Body>
+                <Modal.Footer className="btn-style">
                     <Button variant="secondary" onClick={errorHandleClose}>
                         Close
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showGamePlayError} onHide={GameplayErrorClose}>
+            <Modal show={showServerBox} centered onHide={errorHandleClose}>
                 <Modal.Header>
-                    <Modal.Title>Error!</Modal.Title>
+                    <Modal.Title>Link to Game Html File</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>First create game after you add Gameplay Videos!</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={GameplayErrorClose}>
+                <Modal.Body style={{ fontWeight: '300' }}>
+                    <Form.Label htmlFor="inputPassword5">Paste the URL of the game&apos;s index.html file.</Form.Label>
+
+                    <Form.Control
+                        type="text"
+                        id="inputPassword5"
+                        value={link}
+                        onChange={linkHandler}
+                        aria-describedby="passwordHelpBlock"
+                    />
+                </Modal.Body>
+                <Modal.Footer className="w-100 d-flex  " style={{ justifyContent: 'left' }}>
+                    <Button
+                        style={{ padding: '5px 35px', backgroundColor: '#4aa74a', border: 'none' }}
+                        onClick={serverConnectedHandler}
+                    >
+                        Save
+                    </Button>
+                    <Button
+                        style={{ padding: '5px 35px', backgroundColor: '#cb5c5c', border: 'none' }}
+                        onClick={errorHandleClose}
+                    >
                         Close
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showGameBannerError} onHide={GameBannersErrorClose}>
-                <Modal.Header>
-                    <Modal.Title>Error!</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>First create game after you add Game Banners!</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={GameBannersErrorClose}>
-                        Close
-                    </Button>
-                </Modal.Footer>
+
+            <Modal show={showGamePlayError} centered onHide={GameplayErrorClose}>
+                {gameData.name !== '-' ? (
+                    <>
+                        <>
+                            <Modal.Header>
+                                <Modal.Title>Modal</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body style={{ fontWeight: '300' }}>
+                                <Form.Label htmlFor="inputPassword5">Modal For Game Play</Form.Label>
+
+                                <Form.Control
+                                    type="text"
+                                    id="inputPassword5"
+                                    value={link}
+                                    onChange={linkHandler}
+                                    aria-describedby="passwordHelpBlock"
+                                />
+                            </Modal.Body>
+                            <Modal.Footer className="w-100 d-flex  " style={{ justifyContent: 'left' }}>
+                                <Button
+                                    style={{ padding: '5px 35px', backgroundColor: '#4aa74a', border: 'none' }}
+                                    onClick={GameplayErrorClose}
+                                >
+                                    Save
+                                </Button>
+                                <Button
+                                    style={{ padding: '5px 35px', backgroundColor: '#cb5c5c', border: 'none' }}
+                                    onClick={GameplayErrorClose}
+                                >
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </>
+                    </>
+                ) : (
+                    <>
+                        <Modal.Header>
+                            <Modal.Title>Error!</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ fontWeight: '300' }}>
+                            First create game after you add Gameplay Videos!
+                        </Modal.Body>
+                        <Modal.Footer className="btn-style">
+                            <Button variant="secondary" onClick={GameplayErrorClose}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </>
+                )}
+            </Modal>
+
+            <Modal show={showGameBannerError} centered onHide={GameBannersErrorClose}>
+                {gameData.name !== '-' ? (
+                    <>
+                        <Modal.Header>
+                            <Modal.Title>Modal</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ fontWeight: '300' }}>
+                            <Form.Label htmlFor="inputPassword5">Modal For Game Banners</Form.Label>
+
+                            <Form.Control
+                                type="text"
+                                id="inputPassword5"
+                                value={link}
+                                onChange={linkHandler}
+                                aria-describedby="passwordHelpBlock"
+                            />
+                        </Modal.Body>
+                        <Modal.Footer className="w-100 d-flex  " style={{ justifyContent: 'left' }}>
+                            <Button
+                                style={{ padding: '5px 35px', backgroundColor: '#4aa74a', border: 'none' }}
+                                onClick={GameBannersErrorClose}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                style={{ padding: '5px 35px', backgroundColor: '#cb5c5c', border: 'none' }}
+                                onClick={GameBannersErrorClose}
+                            >
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </>
+                ) : (
+                    <>
+                        <Modal.Header>
+                            <Modal.Title>Error!</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ fontWeight: '300' }}>
+                            First create game after you add Game Banners!
+                        </Modal.Body>
+                        <Modal.Footer className="btn-style ">
+                            <Button variant="secondary" onClick={GameBannersErrorClose}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </>
+                )}
             </Modal>
         </>
     )

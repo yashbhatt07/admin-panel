@@ -18,9 +18,9 @@
 }
 
 .sidebar a.active {
+    border-left: solid 2px;
     background-color: #292323;
     color: white;
-    text-decoration: underline;
 }
 
 div.content {
@@ -51,4 +51,7 @@ div.content {
 }
 a:hover {
     color: rgb(185, 157, 196) !important;
+}
+.sidebar .nav-link.selected {
+    border-left: 2px solid rgb(245, 242, 242);
 }

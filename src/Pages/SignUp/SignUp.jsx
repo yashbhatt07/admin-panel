@@ -24,6 +24,7 @@ function SignUp() {
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm({
         mode: 'onChange',
@@ -45,7 +46,7 @@ function SignUp() {
         const newUser = await addUser(updatedData)
 
         if (newUser && data.password === data.confirmPassword) {
-            // toaster User registered successfully please verify it
+            reset({ confirmPassword: '' })
             navigate('/login')
         } else if (data.confirmPassword !== data.password) {
             setError('Please Check Confirm Password')

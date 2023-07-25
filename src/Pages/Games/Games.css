@@ -51,3 +51,31 @@ table thead tr th {
     font-size: x-small;
     text-align: center;
 }
+.single-line-header {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+/* #react-select-2-input {
+    min-width: 143px !important;
+    max-width: 143px !important;
+    width: 143px !important;
+}
+.css-13cymwt-control {
+    min-width: 143px !important;
+    max-width: 143px !important;
+    width: 143px !important;
+} */
+/* .css-13cymwt-control {
+    width: 202px !important;
+}
+.css-w9q2zk-Input2 {
+    width: 0;
+} */
+/* .fixed-w {
+    min-width: 100px !important;
+    max-width: 120px !important;
+} */
+.css-w9q2zk-Input2 {
+    padding: 0 70px;
+}

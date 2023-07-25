@@ -114,3 +114,14 @@ input:hover {
 .select-options {
     padding: 0 70px;
 }
+
+.btn-style {
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+.btn-style button {
+    background-color: #cb5c5c !important;
+    border: none;
+    padding: 6px 30px;
+}

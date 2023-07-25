@@ -39,7 +39,6 @@ export const EditSchema = yup.object().shape({
     name: yup
         .string()
         .required('Name is required')
-        .matches(/^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/gi, 'Name can only contain Latin letters.')
         .min(2, 'Name must be at least 2 characters')
         .max(12, 'Name must be less then 12 characters')
         .required('Name is required'),
@@ -62,6 +61,15 @@ export const EditSchema = yup.object().shape({
         .required('Please Select DevlopedBy'),
 
     isFeatured: yup.boolean(),
-    priority: yup.number().required('Priority is required'),
+    priority: yup
+        .string()
+        .required('Please Enter Priority')
+        .matches(/^[0-9]+$/, 'Priority only contains numbers')
+        .test('is-number', 'Priority must be a number', (value) => {
+            if (!isNaN(value)) {
+                return true
+            }
+            return false
+        }),
     status: yup.string(),
 })
