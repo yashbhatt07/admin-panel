@@ -43,6 +43,8 @@ function SignUp() {
         updatedData.updatedAt = null
         updatedData.role = 'user'
 
+        delete updatedData.confirmPassword
+
         const newUser = await addUser(updatedData)
 
         if (newUser && data.password === data.confirmPassword) {

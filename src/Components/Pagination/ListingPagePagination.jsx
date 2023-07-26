@@ -2,9 +2,18 @@ import '../Pagination/TablePagination.css'
 import Pagination from 'react-bootstrap/Pagination'
 
 function ListingPagePagibnation({ gameTable }) {
+    const currentPageIndex = gameTable.getState().pagination.pageIndex
+    const pageCount = gameTable.getPageCount()
+    const isSecondToLastPage = currentPageIndex === pageCount - 1
     return (
         <>
-            <div className="flex items-center gap-2 d-flex gap-5">
+            <div className="flex align-items-center gap-2 d-flex gap-5 justify-content-between">
+                <span className="flex items-center gap-1">
+                    <div>Page</div>
+                    <strong>
+                        {currentPageIndex + 1} of {pageCount}
+                    </strong>
+                </span>
                 <button
                     className="border rounded p-1"
                     onClick={() => gameTable.setPageIndex(0)}
@@ -28,25 +37,24 @@ function ListingPagePagibnation({ gameTable }) {
                 </button>
                 <button
                     className="border rounded p-1"
-                    onClick={() => gameTable.setPageIndex(gameTable.getPageCount() - 1)}
+                    onClick={() => gameTable.setPageIndex(pageCount - 1)}
                     disabled={!gameTable.getCanNextPage()}
                 >
                     {'>>'}
                 </button>
-                <span className="flex items-center gap-1">
-                    <div>Page</div>
-                    <strong>
-                        {gameTable.getState().pagination.pageIndex + 1} of {gameTable.getPageCount()}
-                    </strong>
-                </span>
                 <span className="flex items-center gap-1">
                     | Go to page:
                     <input
                         type="number"
                         defaultValue={gameTable.getState().pagination.pageIndex + 1}
                         onChange={(e) => {
-                            const page = e.target.value ? Number(e.target.value) - 1 : 0
-                            gameTable.setPageIndex(page)
+                            const inputBox = e.target.value ? Number(e.target.value) - 1 : 0
+                            const lastPageIndex = pageCount - 1
+                            if (inputBox >= 0 && inputBox <= lastPageIndex) {
+                                if (inputBox !== currentPageIndex) {
+                                    gameTable.setPageIndex(inputBox)
+                                }
+                            }
                         }}
                         className="border p-1 rounded w-16"
                     />
@@ -64,25 +72,7 @@ function ListingPagePagibnation({ gameTable }) {
                         </option>
                     ))}
                 </select>
-                <div>{gameTable.getRowModel().rows.length} Rows</div>
             </div>
-            {/* <Pagination>
-      <Pagination.First />
-      <Pagination.Prev />
-      <Pagination.Item>{1}</Pagination.Item>
-      <Pagination.Ellipsis />
-
-      <Pagination.Item>{10}</Pagination.Item>
-      <Pagination.Item>{11}</Pagination.Item>
-      <Pagination.Item active>{12}</Pagination.Item>
-      <Pagination.Item>{13}</Pagination.Item>
-      <Pagination.Item disabled>{14}</Pagination.Item>
-
-      <Pagination.Ellipsis />
-      <Pagination.Item>{20}</Pagination.Item>
-      <Pagination.Next />
-      <Pagination.Last />
-    </Pagination> */}
         </>
     )
 }

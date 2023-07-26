@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Card, Form, Modal, Offcanvas } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -11,11 +11,22 @@ import SelectItems from '../../Components/SelectItems/SelectItems'
 import Details from './Components/Details'
 import Modes from './Components/Modes'
 import GameIcon from '../../Components/GameIcon/GameIcon'
+import GameBanners from '../../Components/GameIcon/GameBanners'
 import { showToast } from '../ToastMessage/ToastMessage'
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
+import ErrorModal from '../../Components/ErrorModal/ErrorModal'
+
+import { addUser, updateUser } from '../../API/Users'
+import { addGames, updateGames } from '../../API/Games'
 
 const NewGames = ({ type }) => {
+    console.log('🚀 ~ file: New-Games.jsx:21 ~ NewGames ~ type:', type)
+    const inputRef = useRef(null)
+
+    const handleWheel = (e) => {
+        e.preventDefault()
+    }
     const { id } = useParams()
     const navigate = useNavigate()
 
@@ -48,21 +59,33 @@ const NewGames = ({ type }) => {
     const [showServerBox, setShowServerBox] = useState(false)
     const [serverStyle, setServerStyle] = useState({ color: 'red', fontSize: '12px' })
     const [link, setLink] = useState('')
+    const [addBanner, setAddBanner] = useState(false)
+
+    const addBannerHandler = () => {
+        setAddBanner(true)
+    }
 
     const linkHandler = (e) => {
         setLink(e.target.value)
     }
+
+    const regex =
+        /^(https?|ftp):\/\/(([a-z\d]([a-z\d-]*[a-z\d])?\.)+[a-z]{2,}|localhost)(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i
+
     console.log('🚀 ~ file: New-Games.jsx:51 ~ NewGames ~ link:', link)
 
     const serverConnectedHandler = () => {
-        if (link !== '') {
+        if (regex.test(link)) {
             setServerStyle({ color: 'green', fontSize: '12px' })
             setLink('')
             errorHandleClose()
         }
     }
 
-    const handleClose = () => setShow(false)
+    const handleClose = () => {
+        reset()
+        setShow(false)
+    }
     const handleShow = () => {
         setShow(true)
     }
@@ -103,6 +126,7 @@ const NewGames = ({ type }) => {
         handleSubmit,
         setValue,
         getValues,
+        reset,
         control,
         formState: { errors },
     } = useForm({
@@ -134,29 +158,23 @@ const NewGames = ({ type }) => {
     const submit = async (data) => {
         let dataToSend = _.cloneDeep(gameData)
         dataToSend = { ...dataToSend, ...data }
-        console.log('🚀 ~ file: New-Games.jsx:112 ~ submit ~ dataToSend:', dataToSend)
 
         if (type === 'add') {
-            await axios
-                .post('games', dataToSend)
-
-                .then((res) => {
-                    setGameData(() => {
-                        return { ...dataToSend }
-                    })
-                    navigate(`/games/edit/${res.data.id}`)
-                    return res.data
+            const addNewUser = await addGames(dataToSend)
+            if (addNewUser.status === 201) {
+                setGameData(() => {
+                    return { ...dataToSend }
                 })
-                .catch((err) => {
-                    console.log(err)
-                })
+                navigate(`/games/edit/${addNewUser.data.id}`)
+            }
         } else if (type === 'edit') {
-            await axios.put(`games/${id}`, dataToSend).then((res) => {
-                const editedData = res.data
+            const editUser = await updateGames(id, dataToSend)
+
+            if (editUser.status === 200) {
                 setGameData((prev) => {
-                    return { ...prev, ...editedData }
+                    return { ...prev, ...editUser.data }
                 })
-            })
+            }
         } else {
             showToast()
         }
@@ -164,32 +182,20 @@ const NewGames = ({ type }) => {
         handleClose()
     }
 
-    const statusHandler = () => {
+    const statusHandler = async () => {
         if (type === 'edit') {
-            setGameData((prevGameData) => {
-                const newStatus =
-                    prevGameData.status === 'IN DRAFT'
-                        ? 'ACTIVE'
-                        : prevGameData.status === 'ACTIVE'
-                        ? 'INACTIVE'
-                        : 'ACTIVE'
-
-                const updatedGameData = {
-                    ...prevGameData,
-                    status: newStatus,
-                }
-
-                axios
-                    .put(`games/${id}`, updatedGameData)
-                    .then((res) => {})
-                    .catch((error) => {
-                        console.log('Error updating data:', error)
-                    })
-
-                return updatedGameData
-            })
+            const copyGame = _.cloneDeep(gameData)
+            copyGame.status =
+                copyGame.status === 'IN DRAFT' ? 'ACTIVE' : copyGame.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
+            await updateUser(id, copyGame)
+            console.log('🚀 ~ file: New-Games.jsx:196 ~ statusHandler ~ a:', a)
+            setGameData(copyGame)
         }
     }
+
+    useEffect(() => {
+        console.log('weduihuhduie', gameData)
+    }, [gameData])
 
     return (
         <>
@@ -199,7 +205,7 @@ const NewGames = ({ type }) => {
                 </div>
                 <div>
                     <span style={serverStyle} onClick={errorHandleShow}>
-                        NOT CONNECTED TO GAME SERVER
+                        {serverStyle.color === 'red' ? 'NOT CONNECTED TO GAME SERVER' : 'CONNECTED TO GAME SERVER'}
                     </span>
                     <Button
                         disabled={type !== 'edit'}
@@ -222,7 +228,7 @@ const NewGames = ({ type }) => {
                     <div className="d-flex">
                         <div style={{ width: '45%' }} className="first-half ">
                             <Details gameData={gameData} handleShow={handleShow} type={type} />
-                            <Modes gameData={gameData} link={link} linkHandler={linkHandler} />
+                            <Modes gameData={gameData} link={link} linkHandler={linkHandler} type={type} />
                         </div>
                         <div>
                             <h6>
@@ -268,13 +274,14 @@ const NewGames = ({ type }) => {
                     <h6>
                         <b>Game Banners(0)</b>
                     </h6>
-                    <button
+                    {/* <button
                         className="text-primary "
                         style={{ fontSize: '12px', border: 'none' }}
-                        onClick={GameBannersErrorShow}
+                        onClick={addBannerHandler}
                     >
                         +ADD NEW
-                    </button>
+                    </button> */}
+                    <GameBanners banners={getValues('banners')} addBannerHandler={addBannerHandler} />
                 </div>
             </div>
             <Offcanvas show={show} onHide={handleClose} placement="end" style={{ backgroundColor: '#f3f1f1' }}>
@@ -381,10 +388,11 @@ const NewGames = ({ type }) => {
                                         borderRadius: '10%',
                                         fontSize: '9px',
                                     }}
-                                    type="text"
+                                    type="number"
                                     id="inputPassword5"
                                     aria-describedby="passwordHelpBlock"
                                     {...register('priority')}
+                                    onWheel={(e) => e.currentTarget.blur()}
                                 />
                             </div>
                             <span className="error">{errors.priority?.message}</span>{' '}
@@ -392,11 +400,12 @@ const NewGames = ({ type }) => {
                     </div>
                 </Offcanvas.Body>
             </Offcanvas>
+
             <Modal show={showError} centered onHide={errorHandleClose}>
                 <Modal.Header>
                     <Modal.Title>Error!</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{ fontWeight: '300' }}>First create game after you add game link!</Modal.Body>
+                <Modal.Body style={{ fontWeight: '300' }}>First create game after you can add game link!</Modal.Body>
                 <Modal.Footer className="btn-style">
                     <Button variant="secondary" onClick={errorHandleClose}>
                         Close
@@ -434,105 +443,36 @@ const NewGames = ({ type }) => {
                 </Modal.Footer>
             </Modal>
 
-            <Modal show={showGamePlayError} centered onHide={GameplayErrorClose}>
-                {gameData.name !== '-' ? (
-                    <>
-                        <>
-                            <Modal.Header>
-                                <Modal.Title>Modal</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body style={{ fontWeight: '300' }}>
-                                <Form.Label htmlFor="inputPassword5">Modal For Game Play</Form.Label>
+            {type === 'edit' ? (
+                <Offcanvas
+                    show={showGamePlayError}
+                    onHide={GameplayErrorClose}
+                    placement="end"
+                    style={{ backgroundColor: '#f3f1f1' }}
+                >
+                    <Offcanvas.Body>
+                        <div className="edit">Game Banners</div>
+                        <Button className="btn-danger" onClick={GameplayErrorClose}>
+                            Close
+                        </Button>
+                        <Button type="submit" className="btn-success mx-3" onClick={GameplayErrorClose}>
+                            Save Changes
+                        </Button>
+                    </Offcanvas.Body>
+                </Offcanvas>
+            ) : (
+                <ErrorModal show={showGamePlayError} onHide={GameplayErrorClose} title="Error!">
+                    <div style={{ fontWeight: '300' }}>First create game after you can add Gameplay Videos!</div>
+                </ErrorModal>
+            )}
 
-                                <Form.Control
-                                    type="text"
-                                    id="inputPassword5"
-                                    value={link}
-                                    onChange={linkHandler}
-                                    aria-describedby="passwordHelpBlock"
-                                />
-                            </Modal.Body>
-                            <Modal.Footer className="w-100 d-flex  " style={{ justifyContent: 'left' }}>
-                                <Button
-                                    style={{ padding: '5px 35px', backgroundColor: '#4aa74a', border: 'none' }}
-                                    onClick={GameplayErrorClose}
-                                >
-                                    Save
-                                </Button>
-                                <Button
-                                    style={{ padding: '5px 35px', backgroundColor: '#cb5c5c', border: 'none' }}
-                                    onClick={GameplayErrorClose}
-                                >
-                                    Close
-                                </Button>
-                            </Modal.Footer>
-                        </>
-                    </>
-                ) : (
-                    <>
-                        <Modal.Header>
-                            <Modal.Title>Error!</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontWeight: '300' }}>
-                            First create game after you add Gameplay Videos!
-                        </Modal.Body>
-                        <Modal.Footer className="btn-style">
-                            <Button variant="secondary" onClick={GameplayErrorClose}>
-                                Close
-                            </Button>
-                        </Modal.Footer>
-                    </>
-                )}
-            </Modal>
-
-            <Modal show={showGameBannerError} centered onHide={GameBannersErrorClose}>
-                {gameData.name !== '-' ? (
-                    <>
-                        <Modal.Header>
-                            <Modal.Title>Modal</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontWeight: '300' }}>
-                            <Form.Label htmlFor="inputPassword5">Modal For Game Banners</Form.Label>
-
-                            <Form.Control
-                                type="text"
-                                id="inputPassword5"
-                                value={link}
-                                onChange={linkHandler}
-                                aria-describedby="passwordHelpBlock"
-                            />
-                        </Modal.Body>
-                        <Modal.Footer className="w-100 d-flex  " style={{ justifyContent: 'left' }}>
-                            <Button
-                                style={{ padding: '5px 35px', backgroundColor: '#4aa74a', border: 'none' }}
-                                onClick={GameBannersErrorClose}
-                            >
-                                Save
-                            </Button>
-                            <Button
-                                style={{ padding: '5px 35px', backgroundColor: '#cb5c5c', border: 'none' }}
-                                onClick={GameBannersErrorClose}
-                            >
-                                Close
-                            </Button>
-                        </Modal.Footer>
-                    </>
-                ) : (
-                    <>
-                        <Modal.Header>
-                            <Modal.Title>Error!</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontWeight: '300' }}>
-                            First create game after you add Game Banners!
-                        </Modal.Body>
-                        <Modal.Footer className="btn-style ">
-                            <Button variant="secondary" onClick={GameBannersErrorClose}>
-                                Close
-                            </Button>
-                        </Modal.Footer>
-                    </>
-                )}
-            </Modal>
+            {type === 'edit' ? (
+                ''
+            ) : (
+                <ErrorModal show={showGameBannerError} onHide={GameBannersErrorClose} title="Error!">
+                    <div style={{ fontWeight: '300' }}> First create game after you can add Game Banners!</div>
+                </ErrorModal>
+            )}
         </>
     )
 }

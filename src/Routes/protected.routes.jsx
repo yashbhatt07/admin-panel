@@ -40,7 +40,7 @@ const Protected = () => {
             />
             <Route
                 exact
-                path="/gamedevelopers"
+                path="/game-developers"
                 element={<ProtectedRouter Component={GameDevelopers} />}
                 errorElement={<ErrorPage />}
             />

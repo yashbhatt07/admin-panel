@@ -61,15 +61,7 @@ export const EditSchema = yup.object().shape({
         .required('Please Select DevlopedBy'),
 
     isFeatured: yup.boolean(),
-    priority: yup
-        .string()
-        .required('Please Enter Priority')
-        .matches(/^[0-9]+$/, 'Priority only contains numbers')
-        .test('is-number', 'Priority must be a number', (value) => {
-            if (!isNaN(value)) {
-                return true
-            }
-            return false
-        }),
+    priority: yup.number().required('Please Enter Priority'),
+
     status: yup.string(),
 })

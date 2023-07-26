@@ -45,7 +45,7 @@ const Details = ({ gameData, handleShow = () => {} }, type) => {
                         </div>
                         <div className="data">
                             <span>Genre</span>
-                            <span>{gameData.genre.value || '-'}</span>
+                            <span>{gameData?.genre?.value || '-'}</span>
                         </div>
                         <div className="data">
                             <span>Developed By</span>

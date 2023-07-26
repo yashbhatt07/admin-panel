@@ -10,8 +10,8 @@ const Public = () => {
     return (
         <Routes>
             <Route path="/" element={<Login />} errorElement={<ErrorPage />} />
-            <Route path="/signup" element={<SignUp />} />
             <Route exact path="/login" element={<Login />} errorElement={<ErrorPage />} />
+            <Route exact path="/signup" element={<SignUp />} />
             <Route exact path="/logout" element={<Logout />} />
             <Route path="*" element={<NotFound />} errorElement={<ErrorPage />} />
         </Routes>

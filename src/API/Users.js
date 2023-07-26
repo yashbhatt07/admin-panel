@@ -11,35 +11,9 @@ import { showToast, showSuccessMessage } from '../Pages/ToastMessage/ToastMessag
  * @throws {Error}
  */
 
-export const addUser = async (userData) => {
-    let newUser
-    await axios
-        .post('users', userData)
-        .then((response) => {
-            // showSuccessMessage('Congratulations,Your Accouond SuccessFully Created')
+export const addUser = async () => {}
 
-            newUser = response.data
-        })
-
-        .catch((err) => {
-            console.error(err)
-            // showToast('Something is wrong with the API')
-        })
-    return newUser
-}
-
-// export const updateUser = async (isChecked,row) => {
-//     const updateData = { ...row.row.original, isDeleted: isChecked, updatedAt: date }
-//     await axios.put(`users/${row.row.original.id}`, updateData)
-//     setUsersData((prevData) => {
-//         const newData = [...prevData]
-//         const index = newData.findIndex((user) => user.id === row.row.original.id)
-//         if (index !== -1) {
-//             newData[index] = updateData
-//         }
-//         return newData
-//     })
-// }
+export const updateUser = async () => {}
 
 export const deleteUser = async () => {}
 

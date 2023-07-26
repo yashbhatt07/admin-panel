@@ -25,6 +25,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faIndianRupeeSign, faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import ListingPagePagibnation from '../../Components/Pagination/ListingPagePagination'
 import { Spinner } from 'react-bootstrap'
+// import { getAllGames } from '../../API/Games'
 function fuzzyFilter(row, columnId, value, addMeta) {
     const itemRank = rankItem(row.getValue(columnId), value)
     addMeta({
@@ -61,11 +62,23 @@ const Games = () => {
 
     useEffect(() => {
         const getUsers = async () => {
-            setLoading(true)
+            // try {
+            //     const displayGameData = await getAllGames()
+            //     console.log(displayGameData)
+            //     if (displayGameData) {
+            //         setTotelGames(displayGameData)
+            //     }
+            //     setLoading(false)
+            // } catch (error) {
+            //     console.error(error)
+            //     setLoading(false)
+            // }
+            // console.log(totelGames)
+
             await axios
                 .get('games')
-                .then((resp) => {
-                    setTotelGames(resp.data)
+                .then((res) => {
+                    setTotelGames(res.data)
                 })
                 .catch((err) => {
                     console.log(err)
@@ -94,20 +107,24 @@ const Games = () => {
             ),
         }),
         columnHelper.accessor((row) => row.id, {
-            id: 'ID',
+            id: 'id',
+            header: 'ID',
             cell: (row) => <span>#{row.row.original.id || '-'}</span>,
         }),
 
         columnHelper.accessor((row) => row.name, {
             id: 'name',
+            header: 'NAME',
             cell: (row) => <span>{row.row.original.name || '-'}</span>,
         }),
         columnHelper.accessor((row) => row.genre, {
-            id: 'GENRE',
+            id: 'genre',
+            header: 'GENRE',
             cell: (row) => <span>{row.row.original.genre?.value || '-'}</span>,
         }),
         columnHelper.accessor((row) => row.developedBy, {
-            id: 'DEVELOPED BY',
+            id: 'developedBy',
+            header: 'DEVELOPED BY',
             cell: (row) => <span>{row.row.original.developedBy?.value || '-'}</span>,
         }),
         columnHelper.accessor((row) => row.users, {
@@ -253,7 +270,7 @@ const Games = () => {
 
             <div>
                 <b style={{ fontSize: '20px', fontWeight: '500' }} className="mx-2">
-                    Games({data.length})
+                    Games ({data.length})
                 </b>
             </div>
 
@@ -268,6 +285,7 @@ const Games = () => {
                                     style={{ fontWeight: '400', fontSize: '10px' }}
                                     className={header.column.columnDef.headerClassName}
                                 >
+                                    {console.log('🚀 ~ file: Games.jsx:320 ~ Games ~ header:', header)}
                                     {header.isPlaceholder ? null : (
                                         <div
                                             style={{ display: 'flex', gap: '3' }}
@@ -282,7 +300,10 @@ const Games = () => {
                                                     {/* <Filter column={header.column} reactTable={reactTable} /> */}
                                                 </div>
                                             ) : null}
-                                            {totelGames.length > 0
+                                            {(totelGames.length > 0 && header.id === 'id') ||
+                                            header.id === 'name' ||
+                                            header.id === 'genre' ||
+                                            header.id === 'developedBy'
                                                 ? {
                                                       asc: (
                                                           <>
@@ -332,7 +353,7 @@ const Games = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={7} className="text-center">
+                            <td colSpan={11} className="text-center">
                                 <span style={{ textAlign: 'center' }}>No Data Found</span>
                             </td>
                         </tr>
