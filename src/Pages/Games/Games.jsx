@@ -25,7 +25,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faIndianRupeeSign, faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import ListingPagePagibnation from '../../Components/Pagination/ListingPagePagination'
 import { Spinner } from 'react-bootstrap'
-// import { getAllGames } from '../../API/Games'
+import { getAllGames } from '../../API/Games'
 function fuzzyFilter(row, columnId, value, addMeta) {
     const itemRank = rankItem(row.getValue(columnId), value)
     addMeta({
@@ -62,28 +62,10 @@ const Games = () => {
 
     useEffect(() => {
         const getUsers = async () => {
-            // try {
-            //     const displayGameData = await getAllGames()
-            //     console.log(displayGameData)
-            //     if (displayGameData) {
-            //         setTotelGames(displayGameData)
-            //     }
-            //     setLoading(false)
-            // } catch (error) {
-            //     console.error(error)
-            //     setLoading(false)
-            // }
-            // console.log(totelGames)
-
-            await axios
-                .get('games')
-                .then((res) => {
-                    setTotelGames(res.data)
-                })
-                .catch((err) => {
-                    console.log(err)
-                    setTotelGames('')
-                })
+            const displayGameData = await getAllGames()
+            if (displayGameData.status === 200) {
+                setTotelGames(displayGameData.data)
+            }
             setLoading(false)
         }
         getUsers()

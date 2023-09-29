@@ -11,22 +11,18 @@ import SelectItems from '../../Components/SelectItems/SelectItems'
 import Details from './Components/Details'
 import Modes from './Components/Modes'
 import GameIcon from '../../Components/GameIcon/GameIcon'
-import GameBanners from '../../Components/GameIcon/GameBanners'
+// import GameBanners from '../../Components/GameIcon/GameBanners'
 import { showToast } from '../ToastMessage/ToastMessage'
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
 import ErrorModal from '../../Components/ErrorModal/ErrorModal'
 
-import { addUser, updateUser } from '../../API/Users'
 import { addGames, updateGames } from '../../API/Games'
+import GameBanners from '../../Components/GameIcon/GameBanners'
 
 const NewGames = ({ type }) => {
     console.log('🚀 ~ file: New-Games.jsx:21 ~ NewGames ~ type:', type)
-    const inputRef = useRef(null)
 
-    const handleWheel = (e) => {
-        e.preventDefault()
-    }
     const { id } = useParams()
     const navigate = useNavigate()
 
@@ -187,8 +183,7 @@ const NewGames = ({ type }) => {
             const copyGame = _.cloneDeep(gameData)
             copyGame.status =
                 copyGame.status === 'IN DRAFT' ? 'ACTIVE' : copyGame.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
-            await updateUser(id, copyGame)
-            console.log('🚀 ~ file: New-Games.jsx:196 ~ statusHandler ~ a:', a)
+            await updateGames(id, copyGame)
             setGameData(copyGame)
         }
     }
@@ -281,7 +276,7 @@ const NewGames = ({ type }) => {
                     >
                         +ADD NEW
                     </button> */}
-                    <GameBanners banners={getValues('banners')} addBannerHandler={addBannerHandler} />
+                    <GameBanners banners={getValues('banners')} setValue={setValue} />
                 </div>
             </div>
             <Offcanvas show={show} onHide={handleClose} placement="end" style={{ backgroundColor: '#f3f1f1' }}>
@@ -466,13 +461,9 @@ const NewGames = ({ type }) => {
                 </ErrorModal>
             )}
 
-            {type === 'edit' ? (
-                ''
-            ) : (
-                <ErrorModal show={showGameBannerError} onHide={GameBannersErrorClose} title="Error!">
-                    <div style={{ fontWeight: '300' }}> First create game after you can add Game Banners!</div>
-                </ErrorModal>
-            )}
+            <ErrorModal show={showGameBannerError} onHide={GameBannersErrorClose} title="Error!">
+                <div style={{ fontWeight: '300' }}> First create game after you can add Game Banners!</div>
+            </ErrorModal>
         </>
     )
 }

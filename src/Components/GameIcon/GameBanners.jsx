@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import PropTypes from 'prop-types'
-import profilelogo from '../../assets/profilelogo.png'
 
 function GameBanners({ banners = '', setValue }) {
     const [file, setFile] = useState(null)
@@ -44,6 +42,7 @@ function GameBanners({ banners = '', setValue }) {
     const { getRootProps, getInputProps } = useDropzone({
         accept: 'image/jpeg,image/png',
         onDrop,
+        multiple: true,
     })
 
     return (
@@ -54,7 +53,7 @@ function GameBanners({ banners = '', setValue }) {
                     <div className="d-flex w-100 justify-content-between ">
                         {file ? (
                             <div className="container button">
-                                <img width={50} height={50} src={file.base64String} alt="Uploaded" />
+                                <img width={170} height={130} src={file.base64String} alt="Uploaded" />
                                 <br />
                                 <button
                                     type="button"
@@ -67,14 +66,20 @@ function GameBanners({ banners = '', setValue }) {
                             </div>
                         ) : (
                             <div className="container button">
-                                <button
-                                    type="button"
-                                    className="btn text-primary text-center"
-                                    style={{ fontSize: '12px' }}
-                                    id="btn"
-                                >
-                                    +ADD NEW
-                                </button>
+                                {banners ? (
+                                    <img width={70} height={70} src={banners} alt="Profile" />
+                                ) : (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className="btn text-primary text-center"
+                                            style={{ fontSize: '12px', border: 'none' }}
+                                            id="btn"
+                                        >
+                                            ++ ADD NEW
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>

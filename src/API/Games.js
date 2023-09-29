@@ -27,15 +27,15 @@ export const updateGames = async (id, data) => {
         })
 }
 
-// export const getAllGames = async () => {
-//     await axios
-//         .get('games')
-//         .then((res) => {
-//             return res.data
-//         })
-//         .catch((err) => {
-//             console.error(err)
-//         })
-// }
+export const getAllGames = async () => {
+    return await axios
+        .get('games')
+        .then((res) => {
+            return res
+        })
+        .catch((err) => {
+            console.error(err)
+        })
+}
 export const getGamesById = async () => {}
 export const deleteGames = async () => {}
