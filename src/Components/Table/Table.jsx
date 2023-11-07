@@ -17,9 +17,8 @@ const Table = ({ totelUsers, data }) => {
                                 <th key={header.id} colSpan={header.colSpan}>
                                     {header.isPlaceholder ? null : (
                                         <div
-                                            className={`${
-                                                header.column.getCanSort() ? 'cursor-pointer select-none' : ''
-                                            }`}
+                                            className={`${header.column.getCanSort() ? 'cursor-pointer select-none' : ''
+                                                }`}
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {flexRender(header.column.columnDef.header, header.getContext())}
@@ -30,9 +29,9 @@ const Table = ({ totelUsers, data }) => {
                                             ) : null}
                                             {data.length > 0
                                                 ? {
-                                                      asc: <img src={up} alt="Up Errow" width={10} />,
-                                                      desc: <img src={down} alt="Down Errow" width={10} />,
-                                                  }[header.column.getIsSorted() ?? ''] || null
+                                                    asc: <img src={up} alt="Up Errow" width={10} />,
+                                                    desc: <img src={down} alt="Down Errow" width={10} />,
+                                                }[header.column.getIsSorted() ?? ''] || null
                                                 : ''}
                                         </div>
                                     )}

@@ -159,8 +159,8 @@ const Games = () => {
                             row.row.original.status === 'IN DRAFT'
                                 ? '#d9b169fa'
                                 : row.row.original.status === 'ACTIVE'
-                                ? '#4aa74a'
-                                : '#cb5c5c',
+                                    ? '#4aa74a'
+                                    : '#cb5c5c',
                     }}
                 >
                     {row.row.original?.status}
@@ -244,7 +244,6 @@ const Games = () => {
                 </div>
                 <div>
                     <button onClick={goToGames} className="btn btn-primary pb-2 mt-4 " style={{ marginLeft: '430px' }}>
-                        {' '}
                         + New Game
                     </button>
                 </div>
@@ -271,9 +270,8 @@ const Games = () => {
                                     {header.isPlaceholder ? null : (
                                         <div
                                             style={{ display: 'flex', gap: '3' }}
-                                            className={`${
-                                                header.column.getCanSort() ? 'cursor-pointer select-none' : ''
-                                            }`}
+                                            className={`${header.column.getCanSort() ? 'cursor-pointer select-none' : ''
+                                                }`}
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {flexRender(header.column.columnDef.header, header.getContext())}
@@ -283,32 +281,32 @@ const Games = () => {
                                                 </div>
                                             ) : null}
                                             {(totelGames.length > 0 && header.id === 'id') ||
-                                            header.id === 'name' ||
-                                            header.id === 'genre' ||
-                                            header.id === 'developedBy'
+                                                header.id === 'name' ||
+                                                header.id === 'genre' ||
+                                                header.id === 'developedBy'
                                                 ? {
-                                                      asc: (
-                                                          <>
-                                                              <FontAwesomeIcon
-                                                                  icon={faSortUp}
-                                                                  style={{ marginTop: '3px', marginLeft: '3px' }}
-                                                              />
-                                                          </>
-                                                      ),
-                                                      desc: (
-                                                          <>
-                                                              <FontAwesomeIcon
-                                                                  icon={faSortDown}
-                                                                  style={{ marginLeft: '3px' }}
-                                                              />
-                                                          </>
-                                                      ),
-                                                  }[header.column.getIsSorted() ?? ''] || (
-                                                      <FontAwesomeIcon
-                                                          icon={faSort}
-                                                          style={{ marginLeft: '5px', marginTop: '3px' }}
-                                                      />
-                                                  )
+                                                    asc: (
+                                                        <>
+                                                            <FontAwesomeIcon
+                                                                icon={faSortUp}
+                                                                style={{ marginTop: '3px', marginLeft: '3px' }}
+                                                            />
+                                                        </>
+                                                    ),
+                                                    desc: (
+                                                        <>
+                                                            <FontAwesomeIcon
+                                                                icon={faSortDown}
+                                                                style={{ marginLeft: '3px' }}
+                                                            />
+                                                        </>
+                                                    ),
+                                                }[header.column.getIsSorted() ?? ''] || (
+                                                    <FontAwesomeIcon
+                                                        icon={faSort}
+                                                        style={{ marginLeft: '5px', marginTop: '3px' }}
+                                                    />
+                                                )
                                                 : ''}
                                         </div>
                                     )}
